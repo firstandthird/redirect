@@ -1,0 +1,24 @@
+'use strict';
+
+const http = require('http');
+const port = process.env.PORT || 8080;
+const redirect = process.env.REDIRECT || process.argv.pop();
+const statusCode = process.env.STATUS || 301;
+if (!redirect) {
+  throw new Error('must set REDIRECT env var');
+}
+
+console.log(`Redirecting to ${redirect} with status code ${statusCode}`);
+
+const server = http.createServer((req, res) => {
+  res.writeHead(statusCode, {
+    'Location': redirect
+  });
+  res.end();
+}).listen(port);
+
+process.on('SIGTERM', () => {
+  server.close(() => {
+    process.exit(0);
+  });
+});
