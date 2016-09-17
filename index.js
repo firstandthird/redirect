@@ -4,6 +4,8 @@ const http = require('http');
 const port = process.env.PORT || 8080;
 const redirect = process.env.REDIRECT || process.argv.pop();
 const statusCode = process.env.STATUS || 301;
+const url = require('url');
+
 if (!redirect) {
   throw new Error('must set REDIRECT env var');
 }
@@ -11,8 +13,9 @@ if (!redirect) {
 console.log(`Redirecting to ${redirect} with status code ${statusCode}`);
 
 const server = http.createServer((req, res) => {
+  const fullurl = url.resolve(redirect, req.url);
   res.writeHead(statusCode, {
-    'Location': redirect
+    'Location': fullurl
   });
   res.end();
 }).listen(port);
