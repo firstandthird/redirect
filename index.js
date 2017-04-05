@@ -4,6 +4,7 @@ const http = require('http');
 const port = process.env.PORT || 8080;
 const redirect = process.env.REDIRECT || process.argv.pop();
 const statusCode = process.env.STATUS || 301;
+const verbose = process.env.VERBOSE;
 const url = require('url');
 
 if (!redirect) {
@@ -18,6 +19,9 @@ const server = http.createServer((req, res) => {
     'Location': fullurl
   });
   res.end();
+  if (verbose) {
+    console.log(`Host: ${req.headers.host} Referrer: ${req.headers.referer || ''}`);
+  }
 }).listen(port);
 
 process.on('SIGTERM', () => {
