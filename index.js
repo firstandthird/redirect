@@ -28,8 +28,8 @@ const server = http.createServer((req, res) => {
   if (verbose) {
     log({
       from: `${req.headers.host}${req.url}`,
-      redirect: `${redirect}${fullurl}`,
-      referral: req.headers.referer
+      to: fullurl,
+      referral: req.headers.referer || ''
     });
   }
   res.end();
