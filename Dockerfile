@@ -1,9 +1,6 @@
-FROM mhart/alpine-node:base-6
+FROM firstandthird/node:6.10-3-onbuild
 
 EXPOSE 8080
 ENV PORT 8080
 
-ADD index.js /app/index.js
-WORKDIR /app
-
-ENTRYPOINT [ "node", "index.js" ]
+ADD index.js $HOME/src/index.js
