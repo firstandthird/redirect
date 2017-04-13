@@ -1,0 +1,31 @@
+{
+  "name": "redirect",
+  "private": false,
+  "version": "0.0.1",
+  "description": "redirect",
+  "scripts": {
+    "start": "docker run -d --name redirect firstandthird/redirect"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/firstandthird/redirect.git"
+  },
+  "keywords": [],
+  "author": "First+Third",
+  "bugs": {
+    "url": "https://github.com/firstandthird/redirect/issues"
+  },
+  "homepage": "https://github.com/firstandthird/redirect#readme",
+  "dependencies": {
+    "logr": "^2.1.0",
+    "logr-flat": "^2.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^3.9.1",
+    "eslint-config-firstandthird": "^3.2.0",
+    "eslint-plugin-import": "^2.1.0"
+  },
+  "eslintConfig": {
+    "extends": "firstandthird"
+  }
+}

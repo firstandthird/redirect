@@ -6,24 +6,34 @@ const redirect = process.env.REDIRECT || process.argv.pop();
 const statusCode = process.env.STATUS || 301;
 const verbose = process.env.VERBOSE;
 const url = require('url');
+const Logr = require('logr');
+const logrFlat = require('logr-flat');
+const log = Logr.createLogger({
+  type: 'flat',
+  reporters: {
+    flat: {
+      reporter: logrFlat
+    }
+  }
+});
 
 if (!redirect) {
   throw new Error('must set REDIRECT env var');
 }
-
-console.log(`Redirecting to ${redirect} with status code ${statusCode}`);
-
 const server = http.createServer((req, res) => {
   const fullurl = url.resolve(redirect, req.url);
   res.writeHead(statusCode, {
-    'Location': fullurl
+    Location: fullurl
   });
-  res.end();
   if (verbose) {
-    console.log(`Host: ${req.headers.host} Referrer: ${req.headers.referer || ''}`);
+    log({
+      from: `${req.headers.host}${req.url}`,
+      redirect: `${redirect}${fullurl}`,
+      referral: req.headers.referer
+    });
   }
+  res.end();
 }).listen(port);
-
 process.on('SIGTERM', () => {
   server.close(() => {
     process.exit(0);
