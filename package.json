@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "description": "redirect",
   "scripts": {
-    "start": "docker run -d --name redirect firstandthird/redirect"
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",

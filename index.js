@@ -9,7 +9,6 @@ const url = require('url');
 const Logr = require('logr');
 const logrFlat = require('logr-flat');
 const log = Logr.createLogger({
-  type: 'flat',
   reporters: {
     flat: {
       reporter: logrFlat
