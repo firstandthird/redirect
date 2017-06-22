@@ -19,7 +19,8 @@ const log = Logr.createLogger({
 });
 
 let server;
-
+// resolves a redirect directive and request object into a forwarding address
+// or returns falsey if unable to resolve
 module.exports.getRedirect = (redirect, req) => {
   let fullurl;
   switch (redirect) {
