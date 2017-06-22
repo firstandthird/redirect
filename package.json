@@ -4,7 +4,8 @@
   "version": "0.0.1",
   "description": "redirect",
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "tap tests/test.redirect.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,9 @@
   "devDependencies": {
     "eslint": "^3.9.1",
     "eslint-config-firstandthird": "^3.2.0",
-    "eslint-plugin-import": "^2.1.0"
+    "eslint-plugin-import": "^2.1.0",
+    "tap": "^10.5.1",
+    "wreck": "^12.2.2"
   },
   "eslintConfig": {
     "extends": "firstandthird"
