@@ -19,7 +19,8 @@
   "homepage": "https://github.com/firstandthird/redirect#readme",
   "dependencies": {
     "logr": "^2.1.0",
-    "logr-flat": "^2.0.0"
+    "logr-flat": "^2.0.0",
+    "yargs": "^8.0.2"
   },
   "devDependencies": {
     "eslint": "^3.9.1",
