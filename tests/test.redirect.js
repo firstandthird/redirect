@@ -28,7 +28,7 @@ tap.test('getRedirect strips "www."', (t) => {
   t.end();
 });
 
-tap.test('getRedirect strips "www." and https at the same time', (t) => {
+tap.test('getRedirect strips "www." and routes to https at the same time', (t) => {
   const redirection = redirect.getRedirect({ www: true, https: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
   t.equal(redirection, 'https://origin.com/destination', 'replaces the "www" portion and redirects to https');
   t.end();
