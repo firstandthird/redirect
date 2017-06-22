@@ -16,6 +16,19 @@ tap.test('redirects to the redirect location', (t) => {
   });
 });
 
+tap.test('supports redirects that include "http://"', (t) => {
+  redirect.start({
+    port: 8080,
+    redirect: 'http://google.com'
+  });
+  wreck.get('http://localhost:8080/destination', (err, res, payload) => {
+    t.equal(err, null, 'does not error when called');
+    t.equal(res.statusCode, 301, 'returns HTTP 301');
+    t.equal(res.headers.location, 'http://google.com/destination', 'returns correct location header');
+    redirect.stop(t.end);
+  });
+});
+
 tap.test('getRedirect redirects to https', (t) => {
   const redirection = redirect.getRedirect({ https: true }, { headers: { host: 'origin.com' }, url: '/destination' });
   t.equal(redirection, 'https://origin.com/destination', 'redirects to https');

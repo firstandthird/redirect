@@ -48,9 +48,12 @@ module.exports.getRedirect = (args, req) => {
   if (args.https) {
     protocol = 'https';
   }
+  // strip any 'http://' at the beginning of the host:
+  let host = args.redirect || req.headers.host;
+  host = host.replace('http://', '');
   fullurl = url.format({
     protocol,
-    host: args.redirect || req.headers.host,
+    host,
     pathname: req.url
   });
   if (args.www) {
