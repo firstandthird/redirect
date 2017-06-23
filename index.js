@@ -43,27 +43,28 @@ let server;
 // resolves a redirect directive and request object into a forwarding address
 // or returns falsey if unable to resolve
 module.exports.getRedirect = (args, req) => {
-  let fullurl;
-  let protocol = 'http';
-  if (args.https) {
-    protocol = 'https';
+  let redirect = (args.redirect) ? args.redirect : req.headers.host;
+  // if there was no protocol explicitly specified with the redirect then default to http:
+  if (!redirect.startsWith('http://') && !redirect.startsWith('https://')) {
+    redirect = `http://${redirect}`;
   }
-  // strip any 'http://' at the beginning of the host:
-  let host = args.redirect || req.headers.host;
-  host = host.replace('http://', '').replace('https://', '');
-  fullurl = url.format({
-    protocol,
-    host,
-    pathname: req.url
-  });
+  const fullurl = url.parse(redirect);
+  // the path that we're redirecting to will be in the incoming request itself:
+  fullurl.pathname = req.url;
+  // option to strip any wwww. prefix:
   if (args.www) {
-    if (!fullurl.startsWith(`${protocol}://www`)) {
-      log(['redirect', 'error'], `${fullurl} does not start with "www"`);
+    if (!fullurl.host.startsWith('www.')) {
+      log(['redirect', 'error'], `${fullurl.host} does not start with "www"`);
       return undefined;
     }
-    fullurl = fullurl.replace('www.', '');
+    fullurl.host = fullurl.host.replace('www.', '');
   }
-  return fullurl;
+  // option to always upgrade to https
+  if (args.https) {
+    fullurl.protocol = 'https';
+  }
+  // return as a single formatted url string:
+  return url.format(fullurl);
 };
 
 module.exports.start = (args) => {

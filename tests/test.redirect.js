@@ -3,20 +3,7 @@ const tap = require('tap');
 const redirect = require('../index.js');
 const wreck = require('wreck');
 
-tap.test('redirects to the redirect location', (t) => {
-  redirect.start({
-    port: 8080,
-    redirect: 'google.com'
-  });
-  wreck.get('http://localhost:8080/destination', (err, res, payload) => {
-    t.equal(err, null, 'does not error when called');
-    t.equal(res.statusCode, 301, 'returns HTTP 301');
-    t.equal(res.headers.location, 'http://google.com/destination', 'returns correct location header');
-    redirect.stop(t.end);
-  });
-});
-
-tap.test('supports redirects that include "http://"', (t) => {
+tap.test('redirects to the redirect location if an http location was specified', (t) => {
   redirect.start({
     port: 8080,
     redirect: 'http://google.com'
@@ -29,13 +16,39 @@ tap.test('supports redirects that include "http://"', (t) => {
   });
 });
 
-tap.test('getRedirect redirects to https', (t) => {
+tap.test('redirects to the redirect location if an https location was specified', (t) => {
+  redirect.start({
+    port: 8080,
+    redirect: 'https://google.com'
+  });
+  wreck.get('http://localhost:8080/destination', (err, res, payload) => {
+    t.equal(err, null, 'does not error when called');
+    t.equal(res.statusCode, 301, 'returns HTTP 301');
+    t.equal(res.headers.location, 'https://google.com/destination', 'returns correct location header');
+    redirect.stop(t.end);
+  });
+});
+
+tap.test('default is to redirect to the http location if no protocol was specified', (t) => {
+  redirect.start({
+    port: 8080,
+    redirect: 'google.com'
+  });
+  wreck.get('http://localhost:8080/destination', (err, res, payload) => {
+    t.equal(err, null, 'does not error when called');
+    t.equal(res.statusCode, 301, 'returns HTTP 301');
+    t.equal(res.headers.location, 'http://google.com/destination', 'returns correct location header');
+    redirect.stop(t.end);
+  });
+});
+
+tap.test('getRedirect automatically redirects to https when specified', (t) => {
   const redirection = redirect.getRedirect({ https: true }, { headers: { host: 'origin.com' }, url: '/destination' });
   t.equal(redirection, 'https://origin.com/destination', 'redirects to https');
   t.end();
 });
 
-tap.test('getRedirect strips "www."', (t) => {
+tap.test('getRedirect strips "www." when specified', (t) => {
   const redirection = redirect.getRedirect({ www: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
   t.equal(redirection, 'http://origin.com/destination', 'replaces the "www" portion');
   t.end();
