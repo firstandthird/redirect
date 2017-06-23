@@ -5,7 +5,7 @@ const argv = require('yargs')
   default: process.env.PORT || 8080,
   describe: 'port to listen for'
 })
-.option('www', {
+.option('no-www', {
   default: false,
   describe: 'will strip "www." from start of redirect urls'
 })
@@ -52,7 +52,7 @@ module.exports.getRedirect = (args, req) => {
   // the path that we're redirecting to will be in the incoming request itself:
   fullurl.pathname = req.url;
   // option to strip any wwww. prefix:
-  if (args.www) {
+  if (args['no-www']) {
     if (!fullurl.host.startsWith('www.')) {
       log(['redirect', 'error'], `${fullurl.host} does not start with "www"`);
       return undefined;
@@ -68,9 +68,6 @@ module.exports.getRedirect = (args, req) => {
 };
 
 module.exports.start = (args) => {
-  if (args.redirect && args.https) {
-    throw new Error('Cannot use "https" option if you specify a redirect address');
-  }
   log(['redirect', 'start'], `Port ${args.port} redirecting to ${args.redirect}`);
   server = http.createServer((req, res) => {
     const fullurl = module.exports.getRedirect(args, req);
