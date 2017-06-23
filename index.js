@@ -50,7 +50,7 @@ module.exports.getRedirect = (args, req) => {
   }
   // strip any 'http://' at the beginning of the host:
   let host = args.redirect || req.headers.host;
-  host = host.replace('http://', '');
+  host = host.replace('http://', '').replace('https://', '');
   fullurl = url.format({
     protocol,
     host,
