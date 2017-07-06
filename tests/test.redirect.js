@@ -67,3 +67,9 @@ tap.test('returns 400 Bad Request when redirect is www but host did not start wi
     redirect.stop(t.end);
   });
 });
+
+tap.test('...but if both --remove-www and --https are set, it does not error if the incoming address does not start with "www."', (t) => {
+  const redirection = redirect.getRedirect({ 'remove-www': true, https: true }, { headers: { host: 'origin.com' }, url: '/destination' });
+  t.equal(redirection, 'https://origin.com/destination', 'redirects to https');
+  t.end();
+});

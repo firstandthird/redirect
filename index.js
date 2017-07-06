@@ -55,7 +55,7 @@ module.exports.getRedirect = (args, req) => {
   fullurl.pathname = req.url;
   // option to strip any wwww. prefix:
   if (args['remove-www']) {
-    if (!fullurl.host.startsWith('www.')) {
+    if (!fullurl.host.startsWith('www.') && !args.https) {
       log(['redirect', 'error'], `${fullurl.host} does not start with "www"`);
       return undefined;
     }
