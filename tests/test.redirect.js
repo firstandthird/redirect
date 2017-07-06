@@ -49,19 +49,19 @@ tap.test('getRedirect automatically redirects to https when specified', (t) => {
 });
 
 tap.test('getRedirect strips "www." when specified', (t) => {
-  const redirection = redirect.getRedirect({ 'no-www': true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
+  const redirection = redirect.getRedirect({ www: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
   t.equal(redirection, 'http://origin.com/destination', 'replaces the "www" portion');
   t.end();
 });
 
 tap.test('getRedirect strips "www." and routes to https at the same time', (t) => {
-  const redirection = redirect.getRedirect({ 'no-www': true, https: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
+  const redirection = redirect.getRedirect({ www: true, https: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
   t.equal(redirection, 'https://origin.com/destination', 'replaces the "www" portion and redirects to https');
   t.end();
 });
 
 tap.test('returns 400 Bad Request when redirect is www but host did not start with "www."', (t) => {
-  redirect.start({ 'no-www': true, port: 8080 });
+  redirect.start({ www: true, port: 8080 });
   wreck.get('http://localhost:8080/destination', (err, res, payload) => {
     t.equal(err.output.statusCode, 400, 'error is HTTP 400');
     redirect.stop(t.end);
