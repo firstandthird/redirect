@@ -87,10 +87,17 @@ module.exports.start = (args) => {
       res.writeHead(statusCode, {
         Location: fullurl
       });
+      console.log('____')
+      console.log('____')
+      console.log('____')
+      console.log(req.info)
+      console.log(Object.keys.req)
       log(['redirect'], {
         from: `${req.headers.host}${req.url}`,
         to: fullurl,
-        referral: req.headers.referer || ''
+        referral: req.headers.referer || '',
+        userAgent: req.headers['user-agent'] || 'Not specified',
+        ip: req.url.host || 'Not specified'
       });
     } else {
       // otherwise it's a Bad Request error:
