@@ -90,7 +90,9 @@ module.exports.start = (args) => {
       log(['redirect'], {
         from: `${req.headers.host}${req.url}`,
         to: fullurl,
-        referral: req.headers.referer || ''
+        referral: req.headers.referer || '',
+        userAgent: req.headers['user-agent'] || 'Not specified',
+        ip: req.info ? req.info.remoteAddress : 'Not Specified',
       });
     } else {
       // otherwise it's a Bad Request error:
