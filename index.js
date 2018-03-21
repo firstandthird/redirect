@@ -18,14 +18,18 @@ const argv = require('yargs')
   default: false,
   describe: 'will redirect to the specified url, cannot be used with https option'
 })
+.option('statusCode', {
+  default: process.env.STATUS || 301,
+  describe: 'status code to return'
+})
 .help()
+.env()
 .argv;
 
 if (argv._.length > 0) {
   argv.redirect = argv._[0];
 }
 const http = require('http');
-const statusCode = process.env.STATUS || 301;
 const url = require('url');
 const Logr = require('logr');
 const logrFlat = require('logr-flat');
@@ -84,7 +88,7 @@ module.exports.start = (args) => {
     const fullurl = module.exports.getRedirect(args, req);
     // write the redirect header and log that we're redirecting
     if (fullurl) {
-      res.writeHead(statusCode, {
+      res.writeHead(argv.statusCode, {
         Location: fullurl
       });
       log(['redirect'], {
