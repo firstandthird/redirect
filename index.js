@@ -56,7 +56,8 @@ module.exports.getRedirect = (args, req) => {
   }
   const fullurl = url.parse(redirect);
   // the path that we're redirecting to will be in the incoming request itself:
-  fullurl.pathname = req.url;
+  // if path is not just '/' then be sure to preserve it:
+  fullurl.pathname = fullurl.path !== '/' ? `${fullurl.path}${req.url}` : req.url;
   // option to strip any wwww. prefix:
   if (args['remove-www']) {
     if (!fullurl.host.startsWith('www.') && !args.https) {

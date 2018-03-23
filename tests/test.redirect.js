@@ -25,6 +25,17 @@ tap.test('redirects to the redirect location if an https location was specified'
   redirect.stop(t.end);
 });
 
+tap.test('redirects to the redirect location if an https location with a path was specified', async(t) => {
+  redirect.start({
+    port: 8080,
+    redirect: 'https://google.com/forward'
+  });
+  const { res } = await wreck.get('http://localhost:8080/destination');
+  t.equal(res.statusCode, 301, 'returns HTTP 301');
+  t.equal(res.headers.location, 'https://google.com/forward/destination', 'returns correct location header');
+  redirect.stop(t.end);
+});
+
 tap.test('default is to redirect to the http location if no protocol was specified', async(t) => {
   redirect.start({
     port: 8080,
