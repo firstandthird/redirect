@@ -63,16 +63,19 @@ module.exports.getRedirect = (args, req) => {
   if (args.pathPrefix) {
     fullurl.pathname = urlJoin(args.pathPrefix, fullurl.pathname);
   }
-  if (args.stripSubddomain) {
-    fullurl.host = fullurl.host.replace(`${args.stripSubddomain}.`, '');
+  if (args.stripSubdomain) {
+    fullurl.host = fullurl.host.replace(`${args.stripSubdomain}.`, '');
+  }
+  if (args.https) {
+    fullurl.protocol = 'https';
   }
   // return as a single formatted url string:
   return url.format(fullurl);
 };
 
 module.exports.start = (args) => {
-  if (args.host && args.stripSubddomain) {
-    throw new Error('Cannot use both "host" and "stripSubddomain" together');
+  if (args.host && args.stripSubdomain) {
+    throw new Error('Cannot use both "host" and "stripSubdomain" together');
   }
   log(['redirect', 'start'], `Listening to port ${args.port}`);
   if (args.redirect) {

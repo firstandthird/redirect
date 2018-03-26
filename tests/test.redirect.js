@@ -71,12 +71,12 @@ tap.test('options.pathPrefix appends to the begining of the path', async(t) => {
   redirect.stop(t.end);
 });
 
-tap.test('options.stripSubddomain errors if host is set', async(t) => {
+tap.test('options.stripSubdomain errors if host is set', async(t) => {
   try {
     redirect.start({
       port: 8080,
       host: 'host',
-      stripSubddomain: 'www'
+      stripSubdomain: 'www'
     });
   } catch (e) {
     return t.end();
@@ -84,91 +84,34 @@ tap.test('options.stripSubddomain errors if host is set', async(t) => {
   t.fail();
 });
 
-tap.test('options.stripSubddomain will remove sub-domain', async(t) => {
+tap.test('options.stripSubdomain will remove sub-domain', async(t) => {
   const redirection = redirect.getRedirect({
-    stripSubddomain: 'www'
+    stripSubdomain: 'www'
   }, {
     headers: { host: 'www.origin.com' },
     url: '/destination'
   });
   t.equal(redirection, 'http://origin.com/destination');
 });
-/*
-tap.test('redirects to the redirect location if an http location was specified', async(t) => {
-  redirect.start({
-    port: 8080,
-    redirect: 'http://google.com'
+
+tap.test('options.https', async(t) => {
+  const redirection = redirect.getRedirect({
+    https: true
+  }, {
+    headers: { host: 'https://origin.com' },
+    url: '/destination'
   });
-  const { res } = await wreck.get('http://localhost:8080/destination');
-  t.equal(res.statusCode, 301, 'returns HTTP 301');
-  t.equal(res.headers.location, 'http://google.com/destination', 'returns correct location header');
-  redirect.stop(t.end);
+  t.equal(redirection, 'https://origin.com/destination');
 });
 
-tap.test('redirects to the redirect location if an https location was specified', async(t) => {
-  redirect.start({
-    port: 8080,
-    redirect: 'https://google.com'
+tap.test('complex example', async(t) => {
+  const redirection = redirect.getRedirect({
+    stripSubdomain: 'www',
+    https: true,
+    pathPrefix: '/circles',
+  }, {
+    headers: { host: 'http://www.google.com' },
+    url: '/test'
   });
-  const { res } = await wreck.get('http://localhost:8080/destination');
-  t.equal(res.statusCode, 301, 'returns HTTP 301');
-  t.equal(res.headers.location, 'https://google.com/destination', 'returns correct location header');
-  redirect.stop(t.end);
+  t.equal(redirection, 'https://google.com/circles/test');
 });
-
-tap.test('redirects to the redirect location if an https location with a path was specified', async(t) => {
-  redirect.start({
-    port: 8080,
-    redirect: 'https://google.com/forward'
-  });
-  const { res } = await wreck.get('http://localhost:8080/destination');
-  t.equal(res.statusCode, 301, 'returns HTTP 301');
-  t.equal(res.headers.location, 'https://google.com/forward/destination', 'returns correct location header');
-  redirect.stop(t.end);
-});
-
-tap.test('default is to redirect to the http location if no protocol was specified', async(t) => {
-  redirect.start({
-    port: 8080,
-    redirect: 'google.com'
-  });
-  const { res } = await wreck.get('http://localhost:8080/destination');
-  t.equal(res.statusCode, 301, 'returns HTTP 301');
-  t.equal(res.headers.location, 'http://google.com/destination', 'returns correct location header');
-  redirect.stop(t.end);
-});
-
-tap.test('getRedirect automatically redirects to https when specified', (t) => {
-  const redirection = redirect.getRedirect({ https: true }, { headers: { host: 'origin.com' }, url: '/destination' });
-  t.equal(redirection, 'https://origin.com/destination', 'redirects to https');
-  t.end();
-});
-
-tap.test('getRedirect strips "www." when specified', (t) => {
-  const redirection = redirect.getRedirect({ 'remove-www': true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
-  t.equal(redirection, 'http://origin.com/destination', 'replaces the "www" portion');
-  t.end();
-});
-
-tap.test('getRedirect strips "www." and routes to https at the same time', (t) => {
-  const redirection = redirect.getRedirect({ 'remove-www': true, https: true }, { headers: { host: 'www.origin.com' }, url: '/destination' });
-  t.equal(redirection, 'https://origin.com/destination', 'replaces the "www" portion and redirects to https');
-  t.end();
-});
-
-tap.test('returns 400 Bad Request when redirect is www but host did not start with "www."', async (t) => {
-  redirect.start({ 'remove-www': true, port: 8080 });
-  try {
-    await wreck.get('http://localhost:8080/destination');
-  } catch (err) {
-    t.equal(err.output.statusCode, 400, 'error is HTTP 400');
-    redirect.stop(t.end);
-  }
-});
-
-tap.test('...but if both --remove-www and --https are set, it does not error if the incoming address does not start with "www."', (t) => {
-  const redirection = redirect.getRedirect({ 'remove-www': true, https: true }, { headers: { host: 'origin.com' }, url: '/destination' });
-  t.equal(redirection, 'https://origin.com/destination', 'redirects to https');
-  t.end();
-});
-*/
