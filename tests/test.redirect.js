@@ -115,3 +115,14 @@ tap.test('complex example', async(t) => {
   });
   t.equal(redirection, 'https://google.com/circles/test');
 });
+
+tap.test('/robots.txt will return empty', async(t) => {
+  redirect.start({
+    port: 8080,
+    path: 'destination'
+  });
+  const { res, payload } = await wreck.get('http://localhost:8080/robots.txt');
+  t.equal(res.statusCode, 200, 'returns HTTP OK');
+  t.equal(payload.toString(), '', 'returns empty robots.txt');
+  redirect.stop(t.end);
+});
