@@ -1,34 +1,3 @@
-'use strict';
-
-const argv = require('yargs')
-.option('port', {
-  default: process.env.PORT || 8080,
-  describe: 'port to listen for'
-})
-.option('remove-www', {
-  default: false,
-  describe: 'will strip "www." from start of redirect urls',
-  type: 'boolean'
-})
-.option('https', {
-  default: false,
-  describe: 'will redirect to the https: version of requested url, cannot be used with redirect option'
-})
-.option('redirect', {
-  default: false,
-  describe: 'will redirect to the specified url, cannot be used with https option'
-})
-.option('statusCode', {
-  default: process.env.STATUS || 301,
-  describe: 'status code to return'
-})
-.help()
-.env()
-.argv;
-
-if (argv._.length > 0) {
-  argv.redirect = argv._[0];
-}
 const http = require('http');
 const url = require('url');
 const Logr = require('logr');
@@ -45,6 +14,27 @@ const log = Logr.createLogger({
   }
 });
 
+const argv = require('yargs')
+.option('host', {
+  default: undefined,
+  describe: 'host to redirect to'
+})
+.option('port', {
+  default: process.env.PORT || 8080,
+  describe: 'port to listen for'
+})
+.option('statusCode', {
+  default: process.env.STATUS || 301,
+  describe: 'status code to return'
+})
+.help()
+.env()
+.argv;
+
+if (argv._.length > 0) {
+  argv.redirect = argv._[0];
+}
+
 let server;
 // resolves a redirect directive and request object into a forwarding address
 // or returns falsey if unable to resolve
@@ -58,17 +48,8 @@ module.exports.getRedirect = (args, req) => {
   // the path that we're redirecting to will be in the incoming request itself:
   // if path is not just '/' then be sure to preserve it:
   fullurl.pathname = fullurl.path !== '/' ? `${fullurl.path}${req.url}` : req.url;
-  // option to strip any wwww. prefix:
-  if (args['remove-www']) {
-    if (!fullurl.host.startsWith('www.') && !args.https) {
-      log(['redirect', 'error'], `${fullurl.host} does not start with "www"`);
-      return undefined;
-    }
-    fullurl.host = fullurl.host.replace('www.', '');
-  }
-  // option to always upgrade to https
-  if (args.https) {
-    fullurl.protocol = 'https';
+  if (args.host) {
+    fullurl.host = args.host;
   }
   // return as a single formatted url string:
   return url.format(fullurl);

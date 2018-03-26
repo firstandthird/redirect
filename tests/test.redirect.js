@@ -3,6 +3,20 @@ const tap = require('tap');
 const redirect = require('../index.js');
 const wreck = require('wreck');
 
+tap.test('options.host redirects to the specified host', async(t) => {
+  redirect.start({
+    port: 8080,
+    host: 'google.com'
+  });
+  const result = await wreck.get('http://localhost:8080/destination');
+  t.equal(result.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result.res.headers.location, 'http://google.com/destination', 'returns correct location header');
+  const result2 = await wreck.get('http://localhost:8080/path');
+  t.equal(result2.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result2.res.headers.location, 'http://google.com/path', 'returns correct location header');
+  redirect.stop(t.end);
+});
+/*
 tap.test('redirects to the redirect location if an http location was specified', async(t) => {
   redirect.start({
     port: 8080,
@@ -80,3 +94,4 @@ tap.test('...but if both --remove-www and --https are set, it does not error if 
   t.equal(redirection, 'https://origin.com/destination', 'redirects to https');
   t.end();
 });
+*/
