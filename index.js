@@ -17,37 +17,36 @@ const log = Logr.createLogger({
 });
 
 const argv = require('yargs')
-.option('port', {
-  default: process.env.PORT || 8080,
-  describe: 'port to listen for'
-})
-.option('statusCode', {
-  default: process.env.STATUS_CODE || 301,
-  describe: 'status code to return'
-})
-.option('host', {
-  default: process.env.DOMAIN,
-  describe: 'host to redirect to'
-})
-.option('path', {
-  default: process.env.URL_PATH,
-  describe: 'path to redirect to'
-})
-.option('pathPrefix', {
-  default: process.env.PATH_PREFIX,
-  describe: 'path segment appended to the beginning of each path'
-})
-.option('stripSubdomain', {
-  describe: 'will remove the indicated subdomain (eg "www")',
-  default: process.env.STRIP_SUBDOMAIN
-
-})
-.option('https', {
-  default: process.env.HTTPS || false,
-  describe: 'will replace http with https when true'
-})
-.help()
-.argv;
+  .option('port', {
+    default: process.env.PORT || 8080,
+    describe: 'port to listen for'
+  })
+  .option('statusCode', {
+    default: process.env.STATUS_CODE || 301,
+    describe: 'status code to return'
+  })
+  .option('host', {
+    default: process.env.DOMAIN,
+    describe: 'host to redirect to'
+  })
+  .option('path', {
+    default: process.env.URL_PATH,
+    describe: 'path to redirect to'
+  })
+  .option('pathPrefix', {
+    default: process.env.PATH_PREFIX,
+    describe: 'path segment appended to the beginning of each path'
+  })
+  .option('stripSubdomain', {
+    describe: 'will remove the indicated subdomain (eg "www")',
+    default: process.env.STRIP_SUBDOMAIN
+  })
+  .option('https', {
+    default: process.env.HTTPS || false,
+    describe: 'will replace http with https when true'
+  })
+  .help()
+  .argv;
 
 let server;
 // resolves a redirect directive and request object into a forwarding address
