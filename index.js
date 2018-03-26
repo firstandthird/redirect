@@ -22,27 +22,28 @@ const argv = require('yargs')
   describe: 'port to listen for'
 })
 .option('statusCode', {
-  default: process.env.STATUS || 301,
+  default: process.env.STATUS_CODE || 301,
   describe: 'status code to return'
 })
 .option('host', {
-  default: undefined,
+  default: process.env.DOMAIN,
   describe: 'host to redirect to'
 })
 .option('path', {
-  default: undefined,
+  default: process.env.URL_PATH,
   describe: 'path to redirect to'
 })
 .option('pathPrefix', {
-  default: undefined,
+  default: process.env.PATH_PREFIX,
   describe: 'path segment appended to the beginning of each path'
 })
 .option('stripSubdomain', {
-  default: undefined,
-  describe: 'will remove the indicated subdomain (eg "www")'
+  describe: 'will remove the indicated subdomain (eg "www")',
+  default: process.env.STRIP_SUBDOMAIN
+
 })
 .option('https', {
-  default: false,
+  default: process.env.HTTPS || false,
   describe: 'will replace http with https when true'
 })
 .help()
