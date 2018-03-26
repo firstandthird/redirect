@@ -17,14 +17,6 @@ const log = Logr.createLogger({
 });
 
 const argv = require('yargs')
-.option('host', {
-  default: undefined,
-  describe: 'host to redirect to'
-})
-.option('path', {
-  default: undefined,
-  describe: 'path to redirect to'
-})
 .option('port', {
   default: process.env.PORT || 8080,
   describe: 'port to listen for'
@@ -33,19 +25,34 @@ const argv = require('yargs')
   default: process.env.STATUS || 301,
   describe: 'status code to return'
 })
+.option('host', {
+  default: undefined,
+  describe: 'host to redirect to'
+})
+.option('path', {
+  default: undefined,
+  describe: 'path to redirect to'
+})
+.option('pathPrefix', {
+  default: undefined,
+  describe: 'path segment appended to the beginning of each path'
+})
+.option('stripSubdomain', {
+  default: undefined,
+  describe: 'will remove the indicated subdomain (eg "www")'
+})
+.option('https', {
+  default: false,
+  describe: 'will replace http with https when true'
+})
 .help()
-.env()
 .argv;
-
-if (argv._.length > 0) {
-  argv.redirect = argv._[0];
-}
 
 let server;
 // resolves a redirect directive and request object into a forwarding address
 // or returns falsey if unable to resolve
 module.exports.getRedirect = (args, req) => {
-  let redirect = (args.redirect) ? args.redirect : req.headers.host;
+  let redirect = req.headers.host;
   // if there was no protocol explicitly specified with the redirect then default to http:
   if (!redirect.startsWith('http://') && !redirect.startsWith('https://')) {
     redirect = `http://${redirect}`;
@@ -78,15 +85,14 @@ module.exports.start = (args) => {
     throw new Error('Cannot use both "host" and "stripSubdomain" together');
   }
   log(['redirect', 'start'], `Listening to port ${args.port}`);
-  if (args.redirect) {
-    log(['redirect', 'start'], `Will redirect to ${args.redirect}`);
-  }
-  if (args['remove-www']) {
-    log(['redirect', 'start'], 'Will strip "www." portion before redirecting');
-  }
-  if (args.https) {
-    log(['redirect', 'start'], 'Will redirect to the "https" version of the incoming address');
-  }
+  log(['redirect', 'start'], {
+    host: args.host,
+    path: args.path,
+    pathPrefix: args.pathPrefix,
+    statusCode: args.statusCode,
+    https: args.https,
+    stripSubdomain: args.stripSubdomain
+  });
   server = http.createServer((req, res) => {
     const fullurl = module.exports.getRedirect(args, req);
     // write the redirect header and log that we're redirecting
@@ -106,7 +112,6 @@ module.exports.start = (args) => {
       res.writeHead(400, {});
       log(['redirect', 'error'], {
         message: 'could not process redirect',
-        redirect: args.redirect,
         from: `${req.headers.host}${req.url}`,
         referral: req.headers.referer || ''
       });
