@@ -3,6 +3,33 @@ const tap = require('tap');
 const redirect = require('../index.js');
 const wreck = require('wreck');
 
+tap.test('options.path redirects to the specified path', async(t) => {
+  redirect.start({
+    port: 8080,
+    path: 'destination'
+  });
+  const result = await wreck.get('http://localhost:8080/');
+  t.equal(result.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result.res.headers.location, 'http://localhost:8080/destination', 'returns correct location header');
+  const result2 = await wreck.get('http://localhost:8080/path');
+  t.equal(result2.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result2.res.headers.location, 'http://localhost:8080/destination', 'returns correct location header');
+  redirect.stop(t.end);
+});
+
+tap.test('options.path will preserve path if not set', async(t) => {
+  redirect.start({
+    port: 8080
+  });
+  const result = await wreck.get('http://localhost:8080/destination');
+  t.equal(result.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result.res.headers.location, 'http://localhost:8080/destination', 'returns correct location header');
+  const result2 = await wreck.get('http://localhost:8080/path');
+  t.equal(result2.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result2.res.headers.location, 'http://localhost:8080/path', 'returns correct location header');
+  redirect.stop(t.end);
+});
+
 tap.test('options.host redirects to the specified host', async(t) => {
   redirect.start({
     port: 8080,
@@ -16,6 +43,20 @@ tap.test('options.host redirects to the specified host', async(t) => {
   t.equal(result2.res.headers.location, 'http://google.com/path', 'returns correct location header');
   redirect.stop(t.end);
 });
+
+tap.test('options.host will preserve host if not set', async(t) => {
+  redirect.start({
+    port: 8080
+  });
+  const result = await wreck.get('http://localhost:8080/destination');
+  t.equal(result.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result.res.headers.location, 'http://localhost:8080/destination', 'returns correct location header');
+  const result2 = await wreck.get('http://localhost:8080/path');
+  t.equal(result2.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result2.res.headers.location, 'http://localhost:8080/path', 'returns correct location header');
+  redirect.stop(t.end);
+});
+
 /*
 tap.test('redirects to the redirect location if an http location was specified', async(t) => {
   redirect.start({

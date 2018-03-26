@@ -19,6 +19,10 @@ const argv = require('yargs')
   default: undefined,
   describe: 'host to redirect to'
 })
+.option('path', {
+  default: undefined,
+  describe: 'path to redirect to'
+})
 .option('port', {
   default: process.env.PORT || 8080,
   describe: 'port to listen for'
@@ -50,6 +54,9 @@ module.exports.getRedirect = (args, req) => {
   fullurl.pathname = fullurl.path !== '/' ? `${fullurl.path}${req.url}` : req.url;
   if (args.host) {
     fullurl.host = args.host;
+  }
+  if (args.path) {
+    fullurl.pathname = args.path;
   }
   // return as a single formatted url string:
   return url.format(fullurl);
