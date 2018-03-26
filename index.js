@@ -94,6 +94,11 @@ module.exports.start = (args) => {
     stripSubdomain: args.stripSubdomain
   });
   server = http.createServer((req, res) => {
+    // no robots here:
+    if (req.url === '/robots.txt') {
+      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      return res.end('');
+    }
     const fullurl = module.exports.getRedirect(args, req);
     // write the redirect header and log that we're redirecting
     if (fullurl) {
