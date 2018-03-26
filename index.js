@@ -2,6 +2,8 @@ const http = require('http');
 const url = require('url');
 const Logr = require('logr');
 const logrFlat = require('logr-flat');
+const urlJoin = require('url-join');
+
 const log = Logr.createLogger({
   reporters: {
     flat: {
@@ -58,11 +60,20 @@ module.exports.getRedirect = (args, req) => {
   if (args.path) {
     fullurl.pathname = args.path;
   }
+  if (args.pathPrefix) {
+    fullurl.pathname = urlJoin(args.pathPrefix, fullurl.pathname);
+  }
+  if (args.stripSubddomain) {
+    fullurl.host = fullurl.host.replace(`${args.stripSubddomain}.`, '');
+  }
   // return as a single formatted url string:
   return url.format(fullurl);
 };
 
 module.exports.start = (args) => {
+  if (args.host && args.stripSubddomain) {
+    throw new Error('Cannot use both "host" and "stripSubddomain" together');
+  }
   log(['redirect', 'start'], `Listening to port ${args.port}`);
   if (args.redirect) {
     log(['redirect', 'start'], `Will redirect to ${args.redirect}`);

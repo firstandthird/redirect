@@ -57,6 +57,42 @@ tap.test('options.host will preserve host if not set', async(t) => {
   redirect.stop(t.end);
 });
 
+tap.test('options.pathPrefix appends to the begining of the path', async(t) => {
+  redirect.start({
+    port: 8080,
+    pathPrefix: 'prefix'
+  });
+  const result = await wreck.get('http://localhost:8080/');
+  t.equal(result.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result.res.headers.location, 'http://localhost:8080/prefix/', 'returns correct location header');
+  const result2 = await wreck.get('http://localhost:8080/path');
+  t.equal(result2.res.statusCode, 301, 'returns HTTP 301');
+  t.equal(result2.res.headers.location, 'http://localhost:8080/prefix/path', 'returns correct location header');
+  redirect.stop(t.end);
+});
+
+tap.test('options.stripSubddomain errors if host is set', async(t) => {
+  try {
+    redirect.start({
+      port: 8080,
+      host: 'host',
+      stripSubddomain: 'www'
+    });
+  } catch (e) {
+    return t.end();
+  }
+  t.fail();
+});
+
+tap.test('options.stripSubddomain will remove sub-domain', async(t) => {
+  const redirection = redirect.getRedirect({
+    stripSubddomain: 'www'
+  }, {
+    headers: { host: 'www.origin.com' },
+    url: '/destination'
+  });
+  t.equal(redirection, 'http://origin.com/destination');
+});
 /*
 tap.test('redirects to the redirect location if an http location was specified', async(t) => {
   redirect.start({
