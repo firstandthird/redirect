@@ -1,20 +1,9 @@
 const http = require('http');
 const url = require('url');
-const Logr = require('logr');
-const logrFlat = require('logr-flat');
+const lograll = require('logr-all');
 const urlJoin = require('url-join');
 
-const log = Logr.createLogger({
-  reporters: {
-    flat: {
-      reporter: logrFlat,
-      options: {
-        timestamp: false,
-        appColor: true
-      }
-    }
-  }
-});
+const log = lograll({});
 
 const argv = require('yargs')
   .option('port', {
