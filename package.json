@@ -18,8 +18,7 @@
   },
   "homepage": "https://github.com/firstandthird/redirect#readme",
   "dependencies": {
-    "logr": "^2.7.0",
-    "logr-flat": "^3.1.0",
+    "logr-all": "^1.2.0",
     "url-join": "^4.0.0",
     "yargs": "^11.0.0"
   },
