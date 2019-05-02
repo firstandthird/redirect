@@ -22,6 +22,10 @@ const argv = require('yargs')
     default: process.env.URL_PATH,
     describe: 'path to redirect to'
   })
+  .option('query', {
+    default: process.env.URL_QUERY,
+    describe: 'url query params to add on redirect'
+  })
   .option('pathPrefix', {
     default: process.env.PATH_PREFIX,
     describe: 'path segment appended to the beginning of each path'
@@ -46,6 +50,7 @@ module.exports.getRedirect = (args, req) => {
   if (!redirect.startsWith('http://') && !redirect.startsWith('https://')) {
     redirect = `http://${redirect}`;
   }
+
   const fullurl = url.parse(redirect);
   // the path that we're redirecting to will be in the incoming request itself:
   // if path is not just '/' then be sure to preserve it:
@@ -65,7 +70,12 @@ module.exports.getRedirect = (args, req) => {
   if (args.https) {
     fullurl.protocol = 'https';
   }
-  // return as a single formatted url string:
+  if (args.query) {
+    fullurl.query = args.query;
+    fullurl.path = `${fullurl.path}?${args.query}`;
+    fullurl.search = `?${args.query}`;
+  }
+  // return as a single formatted url string
   return url.format(fullurl);
 };
 
