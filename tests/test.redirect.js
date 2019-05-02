@@ -71,7 +71,7 @@ tap.test('options.pathPrefix appends to the begining of the path', async(t) => {
   redirect.stop(t.end);
 });
 
-tap.test('options.stripSubdomain errors if host is set', async(t) => {
+tap.test('options.stripSubdomain errors if host is set', (t) => {
   try {
     redirect.start({
       port: 8080,
@@ -84,7 +84,7 @@ tap.test('options.stripSubdomain errors if host is set', async(t) => {
   t.fail();
 });
 
-tap.test('options.stripSubdomain will remove sub-domain', async(t) => {
+tap.test('options.stripSubdomain will remove sub-domain', (t) => {
   const redirection = redirect.getRedirect({
     stripSubdomain: 'www'
   }, {
@@ -92,9 +92,10 @@ tap.test('options.stripSubdomain will remove sub-domain', async(t) => {
     url: '/destination'
   });
   t.equal(redirection, 'http://origin.com/destination');
+  t.end();
 });
 
-tap.test('options.https', async(t) => {
+tap.test('options.https', (t) => {
   const redirection = redirect.getRedirect({
     https: true
   }, {
@@ -102,9 +103,10 @@ tap.test('options.https', async(t) => {
     url: '/destination'
   });
   t.equal(redirection, 'https://origin.com/destination');
+  t.end();
 });
 
-tap.test('complex example', async(t) => {
+tap.test('complex example', (t) => {
   const redirection = redirect.getRedirect({
     stripSubdomain: 'www',
     https: true,
@@ -114,7 +116,23 @@ tap.test('complex example', async(t) => {
     url: '/test'
   });
   t.equal(redirection, 'https://google.com/circles/test');
+  t.end();
 });
+
+tap.test('complex example params', (t) => {
+  const redirection = redirect.getRedirect({
+    stripSubdomain: 'www',
+    https: true,
+    pathPrefix: '/circles',
+    query: 'mux=1&tux=forge'
+  }, {
+    headers: { host: 'http://www.google.com' },
+    url: '/test'
+  });
+  t.equal(redirection, 'https://google.com/circles/test?mux=1&tux=forge');
+  t.end();
+});
+
 
 tap.test('/robots.txt will return empty', async(t) => {
   redirect.start({
